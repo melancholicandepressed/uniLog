@@ -724,6 +724,38 @@ body {
     overflow-x: hidden;
 }
 
+/* Panel Navbar - Landing page ile aynı stil */
+#studentPanel .navbar,
+#teacherPanel .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: none;
+    box-shadow: none;
+    z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+#studentPanel .navbar.scrolled,
+#teacherPanel .navbar.scrolled {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    box-shadow: 0 8px 40px rgba(26, 45, 90, 0.15),
+                inset 0 -1px 0 rgba(255, 255, 255, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Panel navbar linkleri için text-shadow ekle */
+#studentPanel .nav-link,
+#teacherPanel .nav-link {
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.8);
+}
+
 /* Parallax Background for Panels */
 .parallax-background {
     position: absolute;

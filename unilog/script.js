@@ -1,4 +1,36 @@
-// Veri Yapısı - LocalStorage için
+// Firebase is loaded via CDN in index.html and available globally
+// Use window object to access Firebase functions
+// Wait for Firebase to be ready
+let db, collection, getDocs, doc, getDoc, updateDoc, addDoc;
+
+function initFirebase() {
+    if (window.firebaseDb && window.firebaseCollection) {
+        db = window.firebaseDb;
+        collection = window.firebaseCollection;
+        getDocs = window.firebaseGetDocs;
+        doc = window.firebaseDoc;
+        getDoc = window.firebaseGetDoc;
+        updateDoc = window.firebaseUpdateDoc;
+        addDoc = window.firebaseAddDoc;
+        return true;
+    }
+    return false;
+}
+
+// Try to init immediately, or wait a bit
+if (!initFirebase()) {
+    let attempts = 0;
+    const checkFirebase = setInterval(() => {
+        if (initFirebase() || attempts++ > 20) {
+            clearInterval(checkFirebase);
+            if (!db) {
+                console.error('Firebase başlatılamadı!');
+            }
+        }
+    }, 100);
+}
+
+// Veri Yapısı - Firebase için
 let currentUser = null;
 let currentUserType = null;
 
@@ -125,23 +157,173 @@ const initialTeachers = [
     }
 ];
 
-// LocalStorage İşlemleri
-function initializeData() {
-    // Her zaman güncel verileri kullan (geliştirme için)
-    localStorage.setItem('students', JSON.stringify(initialStudents));
-    localStorage.setItem('teachers', JSON.stringify(initialTeachers));
+// Firebase Firestore İşlemleri
+async function initializeData() {
+    // Ensure Firebase is ready
+    if (!db || !collection) {
+        console.warn('Firebase henüz hazır değil, bekleniyor...');
+        await new Promise(resolve => setTimeout(resolve, 500));
+        if (!initFirebase()) {
+            console.error('Firebase başlatılamadı!');
+            return;
+        }
+    }
+    
+    try {
+        // Öğrenciler koleksiyonunu kontrol et
+        const studentsSnapshot = await getDocs(collection(db, 'students'));
+        
+        // Eğer koleksiyon boşsa, demo verileri ekle
+        if (studentsSnapshot.empty) {
+            console.log('Firebase\'e demo öğrenci verileri ekleniyor...');
+            for (const student of initialStudents) {
+                await addDoc(collection(db, 'students'), student);
+            }
+        }
+        
+        // Öğretmenler koleksiyonunu kontrol et
+        const teachersSnapshot = await getDocs(collection(db, 'teachers'));
+        
+        // Eğer koleksiyon boşsa, demo verileri ekle
+        if (teachersSnapshot.empty) {
+            console.log('Firebase\'e demo öğretmen verileri ekleniyor...');
+            for (const teacher of initialTeachers) {
+                await addDoc(collection(db, 'teachers'), teacher);
+            }
+        }
+        
+        console.log('Firebase verileri hazır!');
+    } catch (error) {
+        console.error('Firebase başlatma hatası:', error);
+    }
 }
 
-function getStudents() {
-    return JSON.parse(localStorage.getItem('students')) || [];
+async function getStudents() {
+    try {
+        const studentsSnapshot = await getDocs(collection(db, 'students'));
+        const students = [];
+        studentsSnapshot.forEach((docSnap) => {
+            // Firebase doküman ID'sini açıkça sakla
+            // ÖNEMLİ: Önce spread yap, sonra id'yi override et (Firebase doküman ID'si gerçek ID'dir)
+            const studentData = docSnap.data();
+            students.push({ 
+                ...studentData,  // Önce veriyi yay (içinde id: 1, 2, 3 olabilir)
+                id: docSnap.id   // Sonra Firebase doküman ID'sini override et (GERÇEK ID!)
+            });
+        });
+        console.log('✅ Öğrenciler yüklendi:', students.map(s => ({ 
+            firebaseDocId: s.id,  // Bu artık Firebase doküman ID'si
+            name: s.name,
+            number: s.number 
+        })));
+        return students;
+    } catch (error) {
+        console.error('Öğrencileri getirme hatası:', error);
+        return [];
+    }
 }
 
-function getTeachers() {
-    return JSON.parse(localStorage.getItem('teachers')) || [];
+async function getTeachers() {
+    try {
+        const teachersSnapshot = await getDocs(collection(db, 'teachers'));
+        const teachers = [];
+        teachersSnapshot.forEach((doc) => {
+            teachers.push({ id: doc.id, ...doc.data() });
+        });
+        return teachers;
+    } catch (error) {
+        console.error('Öğretmenleri getirme hatası:', error);
+        return [];
+    }
 }
 
-function updateStudents(students) {
-    localStorage.setItem('students', JSON.stringify(students));
+async function updateStudent(studentId, updatedData) {
+    try {
+        const studentRef = doc(db, 'students', studentId);
+        await updateDoc(studentRef, updatedData);
+        return true;
+    } catch (error) {
+        console.error('Öğrenci güncelleme hatası:', error);
+        return false;
+    }
+}
+
+async function updateStudentCourse(studentId, courseCode, courseData) {
+    try {
+        // Firebase bağlantısını kontrol et
+        if (!db || !doc || !updateDoc) {
+            console.error('Firebase fonksiyonları hazır değil!');
+            return false;
+        }
+
+        // Öğrenci verisini Firebase'den al
+        const student = await getStudentById(studentId);
+        if (!student) {
+            console.error(`Öğrenci bulunamadı: ${studentId}`);
+            return false;
+        }
+        
+        // Öğrencinin ders listesini güncelle
+        const updatedCourses = student.courses.map(course => 
+            course.code === courseCode 
+                ? { ...course, ...courseData } 
+                : course
+        );
+        
+        // Firebase'de öğrenciyi güncelle (POST/UPDATE işlemi)
+        const studentRef = doc(db, 'students', studentId);
+        await updateDoc(studentRef, {
+            courses: updatedCourses
+        });
+        
+        console.log(`✅ Öğrenci ${studentId} için ${courseCode} dersi güncellendi:`, courseData);
+        return true;
+    } catch (error) {
+        console.error('Öğrenci ders güncelleme hatası:', error);
+        console.error('Hata detayı:', {
+            studentId,
+            courseCode,
+            courseData,
+            errorMessage: error.message
+        });
+        return false;
+    }
+}
+
+async function getStudentById(studentId) {
+    try {
+        if (!studentId) {
+            console.error('getStudentById: studentId boş!');
+            return null;
+        }
+        
+        console.log(`Öğrenci aranıyor (ID: ${studentId})...`);
+        const studentDoc = await getDoc(doc(db, 'students', studentId));
+        
+        if (studentDoc.exists()) {
+            const studentData = studentDoc.data();
+            const student = { 
+                id: studentDoc.id,  // Firebase doküman ID'si
+                ...studentData      // Diğer veriler
+            };
+            console.log(`✅ Öğrenci bulundu: ${student.name} (ID: ${student.id})`);
+            return student;
+        } else {
+            console.error(`❌ Öğrenci bulunamadı! Doküman ID: ${studentId}`);
+            // Tüm öğrencileri listele (debug için)
+            const allStudents = await getStudents();
+            console.log('Mevcut öğrenci ID\'leri:', allStudents.map(s => s.id));
+            return null;
+        }
+    } catch (error) {
+        console.error('Öğrenci getirme hatası:', error);
+        console.error('Hata detayı:', {
+            studentId,
+            errorMessage: error.message,
+            errorCode: error.code
+        });
+        return null;
+    }
 }
 
 // Sayfa Geçişleri
@@ -159,10 +341,6 @@ function showPage(pageId) {
 function showHomePage() {
     showPage('homePage');
     clearLoginForm();
-}
-
-function showLoginPage() {
-    showPage('loginPage');
 }
 
 // Loading Overlay
@@ -184,7 +362,7 @@ function selectUserType(type) {
 }
 
 // Login İşlemi
-function handleLogin(event) {
+async function handleLogin(event) {
     event.preventDefault();
     
     const username = document.getElementById('username').value.trim();
@@ -206,14 +384,14 @@ function handleLogin(event) {
     
     showLoading();
     
-    setTimeout(() => {
+    try {
         if (currentUserType === 'student') {
-            const students = getStudents();
+            const students = await getStudents();
             const student = students.find(s => s.username === username && s.password === password);
             
             if (student) {
                 currentUser = student;
-                loadStudentPanel();
+                await loadStudentPanel();
                 showPage('studentPanel');
             } else {
                 errorMessage.textContent = '❌ Kullanıcı adı veya şifre hatalı!';
@@ -221,12 +399,12 @@ function handleLogin(event) {
                 hideLoading();
             }
         } else if (currentUserType === 'teacher') {
-            const teachers = getTeachers();
+            const teachers = await getTeachers();
             const teacher = teachers.find(t => t.username === username && t.password === password);
             
             if (teacher) {
                 currentUser = teacher;
-                loadTeacherPanel();
+                await loadTeacherPanel();
                 showPage('teacherPanel');
             } else {
                 errorMessage.textContent = '❌ Kullanıcı adı veya şifre hatalı!';
@@ -234,7 +412,12 @@ function handleLogin(event) {
                 hideLoading();
             }
         }
-    }, 500);
+    } catch (error) {
+        console.error('Login hatası:', error);
+        errorMessage.textContent = '❌ Giriş sırasında bir hata oluştu!';
+        errorMessage.classList.add('show');
+        hideLoading();
+    }
 }
 
 // Login Formu Temizle
@@ -255,7 +438,7 @@ function logout() {
 }
 
 // Öğrenci Paneli Yükleme
-function loadStudentPanel() {
+async function loadStudentPanel() {
     // Öğrenci Bilgileri
     document.getElementById('studentName').textContent = currentUser.name;
     document.getElementById('studentNumber').textContent = currentUser.number;
@@ -351,8 +534,21 @@ function loadStudentPanel() {
         tbody.appendChild(row);
     });
     
-    // GPA Hesaplama
-    const gpa = currentUser.courses.length > 0 ? totalAverage / currentUser.courses.length : 0;
+    // GPA Hesaplama (4.0 üzerinden)
+    let totalGPA = 0;
+    let totalCredits = 0;
+    
+    currentUser.courses.forEach(course => {
+        const average = calculateAverage(course.midterm, course.final);
+        const letterGrade = getLetterGrade(average);
+        const courseGPA = letterGrade.gpa;
+        const courseCredits = course.ects || course.credit || 3; // AKTS veya kredi
+        
+        totalGPA += courseGPA * courseCredits;
+        totalCredits += courseCredits;
+    });
+    
+    const gpa = totalCredits > 0 ? totalGPA / totalCredits : 0;
     document.getElementById('gpa').textContent = gpa.toFixed(2);
 }
 
@@ -388,7 +584,7 @@ function getStatusBadge(average) {
 }
 
 // Öğretmen Paneli Yükleme
-function loadTeacherPanel() {
+async function loadTeacherPanel() {
     // Öğretmen Bilgileri
     document.getElementById('teacherName').textContent = currentUser.name;
     // Kurs kodu yerine kurs adını göster
@@ -401,7 +597,7 @@ function loadTeacherPanel() {
         document.getElementById('teacherCourse').textContent = currentUser.course;
     }
     
-    const students = getStudents();
+    const students = await getStudents();
     const courseStudents = students.filter(student => 
         student.courses.some(course => course.code === currentUser.course)
     );
@@ -457,6 +653,11 @@ function loadTeacherPanel() {
     courseStudents.forEach(student => {
         const courseData = student.courses.find(c => c.code === currentUser.course);
         
+        // Firebase doküman ID'sini kullan (veri içindeki id alanını değil)
+        const firebaseDocId = student.id; // Bu Firebase'den gelen gerçek doküman ID'si olmalı
+        
+        console.log(`Öğrenci kartı oluşturuluyor: ${student.name}, Firebase ID: ${firebaseDocId}`);
+        
         const studentCard = document.createElement('div');
         studentCard.className = 'student-card';
         studentCard.innerHTML = `
@@ -477,7 +678,7 @@ function loadTeacherPanel() {
                     <label>Vize Notu</label>
                     <input type="number" 
                            class="midterm-input" 
-                           data-student-id="${student.id}"
+                           data-student-id="${firebaseDocId}"
                            min="0" 
                            max="100" 
                            value="${courseData.midterm || ''}"
@@ -487,7 +688,7 @@ function loadTeacherPanel() {
                     <label>Final Notu</label>
                     <input type="number" 
                            class="final-input" 
-                           data-student-id="${student.id}"
+                           data-student-id="${firebaseDocId}"
                            min="0" 
                            max="100" 
                            value="${courseData.final || ''}"
@@ -499,71 +700,150 @@ function loadTeacherPanel() {
     });
 }
 
-// Notları Kaydetme
-function saveGrades() {
+// Notları Kaydetme - Firebase'e dinamik POST/UPDATE
+async function saveGrades() {
     showLoading();
     
-    setTimeout(() => {
-        const students = getStudents();
+    try {
+        // Firebase kontrolü
+        if (!db || !collection || !updateDoc) {
+            alert('Firebase bağlantısı kurulamadı! Lütfen sayfayı yenileyin.');
+            hideLoading();
+            return;
+        }
+
         const midtermInputs = document.querySelectorAll('.midterm-input');
         const finalInputs = document.querySelectorAll('.final-input');
         
+        if (midtermInputs.length === 0 || finalInputs.length === 0) {
+            alert('Güncellenecek öğrenci bulunamadı!');
+            hideLoading();
+            return;
+        }
+
         let updatedCount = 0;
+        let failedCount = 0;
+        const updatePromises = [];
+        const updateResults = [];
         
-        midtermInputs.forEach((input, index) => {
-            const studentId = parseInt(input.dataset.studentId);
+        // Her öğrenci için güncelleme işlemi
+        for (let i = 0; i < midtermInputs.length; i++) {
+            const input = midtermInputs[i];
+            const finalInput = finalInputs[i];
+            const studentId = input.dataset.studentId;
             const midterm = parseFloat(input.value) || 0;
-            const final = parseFloat(finalInputs[index].value) || 0;
+            const final = parseFloat(finalInput.value) || 0;
+            
+            console.log(`📝 Öğrenci ${i + 1} güncelleniyor:`, {
+                studentId,
+                midterm,
+                final,
+                course: currentUser.course
+            });
             
             // Validasyon
             if (midterm < 0 || midterm > 100 || final < 0 || final > 100) {
-                alert('Notlar 0-100 arasında olmalıdır!');
+                alert(`Öğrenci ${i + 1}: Notlar 0-100 arasında olmalıdır!`);
                 hideLoading();
                 return;
             }
             
-            const student = students.find(s => s.id === studentId);
-            if (student) {
-                const course = student.courses.find(c => c.code === currentUser.course);
-                if (course) {
-                    course.midterm = midterm;
-                    course.final = final;
-                    updatedCount++;
+            // Firebase'e POST/UPDATE işlemi başlat
+            const updatePromise = updateStudentCourse(studentId, currentUser.course, {
+                midterm: midterm,
+                final: final
+            }).then(success => {
+                updateResults.push({ studentId, success });
+                if (success) {
+                    console.log(`✅ Öğrenci ${i + 1} başarıyla güncellendi (ID: ${studentId})`);
+                } else {
+                    console.error(`❌ Öğrenci ${i + 1} güncellenemedi (ID: ${studentId})`);
                 }
+                return success;
+            });
+            
+            updatePromises.push(updatePromise);
+        }
+        
+        // Tüm Firebase güncellemelerini bekle
+        const results = await Promise.allSettled(updatePromises);
+        
+        // Sonuçları değerlendir
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled' && result.value === true) {
+                updatedCount++;
+            } else {
+                failedCount++;
+                console.error(`Öğrenci ${index + 1} güncellenemedi:`, result);
             }
         });
         
-        updateStudents(students);
+        // Paneli Firebase'den yeniden yükle (güncel veriler için)
+        await loadTeacherPanel();
         
-        // Paneli yeniden yükle
-        loadTeacherPanel();
-        
-        // Başarı Mesajı
+        // Başarı/Hata Mesajı
         const successMessage = document.getElementById('successMessage');
-        successMessage.textContent = `✓ ${updatedCount} öğrencinin notları başarıyla kaydedildi!`;
-        successMessage.classList.add('show');
+        if (failedCount === 0) {
+            successMessage.textContent = `✅ ${updatedCount} öğrencinin notları Firebase'e başarıyla kaydedildi!`;
+            successMessage.className = 'success-message show';
+            console.log(`✅ Tüm notlar Firebase'e kaydedildi: ${updatedCount} öğrenci`);
+        } else {
+            successMessage.textContent = `⚠️ ${updatedCount} öğrenci güncellendi, ${failedCount} öğrenci güncellenemedi!`;
+            successMessage.className = 'error-message show';
+            console.warn(`⚠️ Kısmi başarı: ${updatedCount} başarılı, ${failedCount} başarısız`);
+        }
         
         setTimeout(() => {
             successMessage.classList.remove('show');
-        }, 3000);
+        }, 5000);
         
-        // Paneli yenile
-        loadTeacherPanel();
         hideLoading();
-    }, 500);
+    } catch (error) {
+        console.error('Not kaydetme hatası:', error);
+        alert(`Notlar kaydedilirken bir hata oluştu: ${error.message}`);
+        hideLoading();
+    }
 }
 
 // ==================== NAVBAR SCROLL & HAMBURGER ====================
-// Navbar scroll efekti
-window.addEventListener('scroll', () => {
+// Navbar scroll durumunu kontrol et
+function checkNavbarScroll() {
+    const scrollY = window.scrollY;
+    
+    // Landing page navbar
     const navbar = document.getElementById('navbar');
     if (navbar) {
-        if (window.scrollY > 50) {
+        if (scrollY > 50) {
             navbar.classList.add('scrolled');
         } else {
             navbar.classList.remove('scrolled');
         }
     }
+    
+    // Student panel navbar
+    const navbarStudent = document.getElementById('navbarStudent');
+    if (navbarStudent) {
+        if (scrollY > 50) {
+            navbarStudent.classList.add('scrolled');
+        } else {
+            navbarStudent.classList.remove('scrolled');
+        }
+    }
+    
+    // Teacher panel navbar
+    const navbarTeacher = document.getElementById('navbarTeacher');
+    if (navbarTeacher) {
+        if (scrollY > 50) {
+            navbarTeacher.classList.add('scrolled');
+        } else {
+            navbarTeacher.classList.remove('scrolled');
+        }
+    }
+}
+
+// Navbar scroll efekti (tüm navbar'lar için)
+window.addEventListener('scroll', () => {
+    checkNavbarScroll();
     
     // Parallax scroll effect
     parallaxScroll();
@@ -682,8 +962,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 });
 
 // Sayfa Yüklendiğinde
-document.addEventListener('DOMContentLoaded', () => {
-    initializeData();
+document.addEventListener('DOMContentLoaded', async () => {
+    await initializeData();
+    
+    // Sayfa yüklendiğinde navbar scroll durumunu kontrol et
+    checkNavbarScroll();
     
     // Login formları için
     const loginForm = document.getElementById('loginForm');
@@ -739,12 +1022,29 @@ document.addEventListener('input', (e) => {
     }
 });
 
-// showLoginPage fonksiyonunu güncelle - user type parametresi ekle
-const originalShowLoginPage = showLoginPage;
+// showLoginPage fonksiyonu - user type parametresi ile
 function showLoginPage(userType) {
     if (userType) {
         selectUserType(userType);
     }
     showPage('loginPage');
+}
+
+// HTML'deki onclick event'leri için global erişim
+function exposeFunctions() {
+    window.showLoginPage = showLoginPage;
+    window.showHomePage = showHomePage;
+    window.handleLogin = handleLogin;
+    window.selectUserType = selectUserType;
+    window.logout = logout;
+    window.saveGrades = saveGrades;
+}
+
+// Expose functions immediately and on DOM ready
+exposeFunctions();
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', exposeFunctions);
+} else {
+    exposeFunctions();
 }
 

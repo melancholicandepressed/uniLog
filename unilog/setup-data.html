@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unilog - Veri Kurulumu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #1a2d5a;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .info {
+            background: #f0f8ff;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Firebase Veri Kurulumu</h1>
+        
+        <div class="info">
+            <strong>Bu sayfa Firebase'e demo verileri ekler:</strong>
+            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                <li>23 Öğrenci hesabı (3 mevcut + 20 yeni)</li>
+                <li>7 Öğretmen hesabı</li>
+            </ul>
+        </div>
+
+        <button id="setupBtn" onclick="setupData()">📥 Demo Verileri Ekle</button>
+        <button onclick="clearData()" style="background: #dc3545;">🗑️ Tüm Verileri Sil</button>
+        <button onclick="window.location.href='index.html'">🏠 Ana Sayfaya Dön</button>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3MytAPaVE4ncq8nQmdE2BosCdCRaC1Q0",
+            authDomain: "unilog-aada4.firebaseapp.com",
+            projectId: "unilog-aada4",
+            storageBucket: "unilog-aada4.firebasestorage.app",
+            messagingSenderId: "98426342238",
+            appId: "1:98426342238:web:94bbcf5d0c20f755991dcf",
+            measurementId: "G-V5KQKFYKHF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.firebaseDb = db;
+        window.firebaseCollection = collection;
+        window.firebaseGetDocs = getDocs;
+        window.firebaseAddDoc = addDoc;
+        window.firebaseDeleteDoc = deleteDoc;
+        window.firebaseDoc = doc;
+        window.firebaseGetDoc = getDoc;
+
+        // Rastgele not üretme fonksiyonu
+        function getRandomGrade(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // Rastgele devamsızlık üretme fonksiyonu
+        function getRandomAbsence(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        // Ortak ders listesi
+        const commonCourses = [
+            { code: "YBS 301", name: "Yöneylem Araştırması", absenceLimit: 21, credit: 4, ects: 5 },
+            { code: "YBS 391", name: "Hukuka Giriş", absenceLimit: 16, credit: 3, ects: 4 },
+            { code: "YBS 305", name: "Nesneye Dayalı Programlama", absenceLimit: 21, credit: 3, ects: 5 },
+            { code: "YBS 303", name: "Yazılım Kalite Yönetimi", absenceLimit: 16, credit: 3, ects: 4 },
+            { code: "IYU 325", name: "İş Yeri Uygulaması", absenceLimit: 16, credit: 3, ects: 4 },
+            { code: "YBS 457", name: "Web Tabanlı Uygulama Programlama", absenceLimit: 16, credit: 3, ects: 4 },
+            { code: "YBS 309", name: "Kurumsal Kaynak Planlama", absenceLimit: 16, credit: 3, ects: 4 }
+        ];
+
+        // Öğrenci oluşturma fonksiyonu
+        function createStudent(id, studentNumber, name) {
+            const courses = commonCourses.map(course => {
+                const midterm = getRandomGrade(50, 100);
+                const final = getRandomGrade(50, 100);
+                const absence = getRandomAbsence(course.absenceLimit);
+                return {
+                    code: course.code,
+                    name: course.name,
+                    midterm: midterm,
+                    final: final,
+                    classAvgMid: getRandomGrade(65, 80),
+                    classAvgFinal: getRandomGrade(68, 83),
+                    absence: absence,
+                    absenceLimit: course.absenceLimit,
+                    credit: course.credit,
+                    ects: course.ects
+                };
+            });
+
+            return {
+                id: id,
+                username: studentNumber.toString(),
+                password: studentNumber.toString(),
+                name: name,
+                number: studentNumber.toString(),
+                courses: courses
+            };
+        }
+
+        // Demo veriler - Mevcut öğrenciler
+        const existingStudents = [
+            {
+                id: 1,
+                username: "230103009",
+                password: "1234",
+                name: "Kaan Karameşe",
+                number: "230103009",
+                courses: [
+                    { code: "YBS 301", name: "Yöneylem Araştırması", midterm: 85, final: 88, classAvgMid: 72, classAvgFinal: 75, absence: 8, absenceLimit: 21, credit: 4, ects: 5 },
+                    { code: "YBS 391", name: "Hukuka Giriş", midterm: 78, final: 82, classAvgMid: 70, classAvgFinal: 73, absence: 5, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 305", name: "Nesneye Dayalı Programlama", midterm: 92, final: 95, classAvgMid: 75, classAvgFinal: 78, absence: 3, absenceLimit: 21, credit: 3, ects: 5 },
+                    { code: "YBS 303", name: "Yazılım Kalite Yönetimi", midterm: 88, final: 90, classAvgMid: 73, classAvgFinal: 76, absence: 12, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "IYU 325", name: "İş Yeri Uygulaması", midterm: 95, final: 98, classAvgMid: 80, classAvgFinal: 83, absence: 15, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 457", name: "Web Tabanlı Uygulama Programlama", midterm: 90, final: 93, classAvgMid: 76, classAvgFinal: 79, absence: 13, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 309", name: "Kurumsal Kaynak Planlama", midterm: 82, final: 85, classAvgMid: 71, classAvgFinal: 74, absence: 7, absenceLimit: 16, credit: 3, ects: 4 }
+                ]
+            },
+            {
+                id: 2,
+                username: "230103010",
+                password: "1234",
+                name: "Ahmet Polat",
+                number: "230103010",
+                courses: [
+                    { code: "YBS 301", name: "Yöneylem Araştırması", midterm: 75, final: 78, classAvgMid: 72, classAvgFinal: 75, absence: 18, absenceLimit: 21, credit: 4, ects: 5 },
+                    { code: "YBS 391", name: "Hukuka Giriş", midterm: 82, final: 85, classAvgMid: 70, classAvgFinal: 73, absence: 10, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 305", name: "Nesneye Dayalı Programlama", midterm: 70, final: 73, classAvgMid: 75, classAvgFinal: 78, absence: 19, absenceLimit: 21, credit: 3, ects: 5 },
+                    { code: "YBS 303", name: "Yazılım Kalite Yönetimi", midterm: 78, final: 80, classAvgMid: 73, classAvgFinal: 76, absence: 15, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "IYU 325", name: "İş Yeri Uygulaması", midterm: 88, final: 90, classAvgMid: 80, classAvgFinal: 83, absence: 8, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 457", name: "Web Tabanlı Uygulama Programlama", midterm: 85, final: 88, classAvgMid: 76, classAvgFinal: 79, absence: 13, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 309", name: "Kurumsal Kaynak Planlama", midterm: 73, final: 76, classAvgMid: 71, classAvgFinal: 74, absence: 14, absenceLimit: 16, credit: 3, ects: 4 }
+                ]
+            },
+            {
+                id: 3,
+                username: "230103011",
+                password: "1234",
+                name: "Ayşe Yılmaz",
+                number: "230103011",
+                courses: [
+                    { code: "YBS 301", name: "Yöneylem Araştırması", midterm: 68, final: 72, classAvgMid: 72, classAvgFinal: 75, absence: 20, absenceLimit: 21, credit: 4, ects: 5 },
+                    { code: "YBS 391", name: "Hukuka Giriş", midterm: 65, final: 70, classAvgMid: 70, classAvgFinal: 73, absence: 15, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 305", name: "Nesneye Dayalı Programlama", midterm: 80, final: 83, classAvgMid: 75, classAvgFinal: 78, absence: 16, absenceLimit: 21, credit: 3, ects: 5 },
+                    { code: "YBS 303", name: "Yazılım Kalite Yönetimi", midterm: 70, final: 74, classAvgMid: 73, classAvgFinal: 76, absence: 14, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "IYU 325", name: "İş Yeri Uygulaması", midterm: 75, final: 78, classAvgMid: 80, classAvgFinal: 83, absence: 12, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 457", name: "Web Tabanlı Uygulama Programlama", midterm: 72, final: 75, classAvgMid: 76, classAvgFinal: 79, absence: 15, absenceLimit: 16, credit: 3, ects: 4 },
+                    { code: "YBS 309", name: "Kurumsal Kaynak Planlama", midterm: 77, final: 80, classAvgMid: 71, classAvgFinal: 74, absence: 11, absenceLimit: 16, credit: 3, ects: 4 }
+                ]
+            }
+        ];
+
+        // Yeni öğrenciler (230103012 - 230103031)
+        const newStudentNames = [
+            "Ayşenur Gökçe",
+            "Sercan Akbıyık",
+            "Doğukan Türker",
+            "Burakhan Bilge",
+            "Cem Yurtdaş",
+            "Semih Akalan",
+            "Taha Bora Çiçek",
+            "Charles Leclerc",
+            "Lewis Hamilton",
+            "Sergen Yalçın",
+            "Kazım Kazım",
+            "Clark Kent",
+            "Bruce Wayne",
+            "Dean Winchester",
+            "Necip Uysal",
+            "Victor Osimhen",
+            "Nuri Bilge Ceylan",
+            "Zeki Demirkubuz",
+            "Cem Yılmaz",
+            "Hakan Şükür"
+        ];
+
+        const newStudents = newStudentNames.map((name, index) => {
+            const studentNumber = 230103012 + index;
+            return createStudent(4 + index, studentNumber, name);
+        });
+
+        // Tüm öğrenciler
+        const initialStudents = [...existingStudents, ...newStudents];
+
+        // Öğretmenler (7 öğretmen)
+        const initialTeachers = [
+            { id: 1, username: "ahmet.ogretmen", password: "teacher123", name: "Ahmet Öztürk", course: "YBS 301" },
+            { id: 2, username: "zeynep.ogretmen", password: "teacher123", name: "Zeynep Arslan", course: "YBS 391" },
+            { id: 3, username: "mehmet.ogretmen", password: "teacher123", name: "Mehmet Yılmaz", course: "YBS 305" },
+            { id: 4, username: "ayse.ogretmen", password: "teacher123", name: "Ayşe Demir", course: "YBS 303" },
+            { id: 5, username: "can.ogretmen", password: "teacher123", name: "Can Kaya", course: "IYU 325" },
+            { id: 6, username: "elif.ogretmen", password: "teacher123", name: "Elif Şahin", course: "YBS 457" },
+            { id: 7, username: "ali.ogretmen", password: "teacher123", name: "Ali Çelik", course: "YBS 309" }
+        ];
+
+        window.setupData = async function() {
+            const btn = document.getElementById('setupBtn');
+            const status = document.getElementById('status');
+            btn.disabled = true;
+            btn.textContent = '⏳ Ekleniyor...';
+            status.className = 'status info';
+            status.textContent = 'Veriler ekleniyor, lütfen bekleyin...';
+
+            try {
+                // Mevcut öğrencileri al (username bazında kontrol için)
+                const studentsSnapshot = await getDocs(collection(db, 'students'));
+                const existingStudentUsernames = new Set();
+                studentsSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.username) {
+                        existingStudentUsernames.add(data.username);
+                    }
+                });
+
+                // Öğrencileri ekle (mevcut olanları atla)
+                let addedStudents = 0;
+                let skippedStudents = 0;
+                for (const student of initialStudents) {
+                    if (existingStudentUsernames.has(student.username)) {
+                        skippedStudents++;
+                        console.log(`⏭️ Öğrenci atlandı (zaten mevcut): ${student.name} (${student.username})`);
+                    } else {
+                        await addDoc(collection(db, 'students'), student);
+                        addedStudents++;
+                        console.log(`✅ Öğrenci eklendi: ${student.name} (${student.username})`);
+                    }
+                }
+
+                let studentMessage = '';
+                if (addedStudents > 0 && skippedStudents > 0) {
+                    studentMessage = `✅ ${addedStudents} öğrenci eklendi, ${skippedStudents} öğrenci atlandı (zaten mevcut)`;
+                } else if (addedStudents > 0) {
+                    studentMessage = `✅ ${addedStudents} öğrenci başarıyla eklendi!`;
+                } else if (skippedStudents > 0) {
+                    studentMessage = `ℹ️ Tüm öğrenciler zaten mevcut (${skippedStudents} öğrenci atlandı)`;
+                }
+
+                // Mevcut öğretmenleri al (username bazında kontrol için)
+                const teachersSnapshot = await getDocs(collection(db, 'teachers'));
+                const existingTeacherUsernames = new Set();
+                teachersSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    if (data.username) {
+                        existingTeacherUsernames.add(data.username);
+                    }
+                });
+
+                // Öğretmenleri ekle (mevcut olanları atla)
+                let addedTeachers = 0;
+                let skippedTeachers = 0;
+                for (const teacher of initialTeachers) {
+                    if (existingTeacherUsernames.has(teacher.username)) {
+                        skippedTeachers++;
+                        console.log(`⏭️ Öğretmen atlandı (zaten mevcut): ${teacher.name} (${teacher.username})`);
+                    } else {
+                        await addDoc(collection(db, 'teachers'), teacher);
+                        addedTeachers++;
+                        console.log(`✅ Öğretmen eklendi: ${teacher.name} (${teacher.username})`);
+                    }
+                }
+
+                let teacherMessage = '';
+                if (addedTeachers > 0 && skippedTeachers > 0) {
+                    teacherMessage = ` ✅ ${addedTeachers} öğretmen eklendi, ${skippedTeachers} öğretmen atlandı (zaten mevcut)`;
+                } else if (addedTeachers > 0) {
+                    teacherMessage = ` ✅ ${addedTeachers} öğretmen başarıyla eklendi!`;
+                } else if (skippedTeachers > 0) {
+                    teacherMessage = ` ℹ️ Tüm öğretmenler zaten mevcut (${skippedTeachers} öğretmen atlandı)`;
+                }
+
+                // Sonuç mesajı
+                if (addedStudents > 0 || addedTeachers > 0) {
+                    status.className = 'status success';
+                    status.textContent = studentMessage + teacherMessage;
+                } else {
+                    status.className = 'status info';
+                    status.textContent = studentMessage + teacherMessage || 'ℹ️ Tüm veriler zaten mevcut.';
+                }
+            } catch (error) {
+                console.error('Hata:', error);
+                status.className = 'status error';
+                status.textContent = `❌ Hata: ${error.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📥 Demo Verileri Ekle';
+            }
+        };
+
+        window.clearData = async function() {
+            if (!confirm('Tüm verileri silmek istediğinize emin misiniz?')) {
+                return;
+            }
+
+            const status = document.getElementById('status');
+            status.className = 'status info';
+            status.textContent = 'Veriler siliniyor...';
+
+            try {
+                // Öğrencileri sil
+                const studentsSnapshot = await getDocs(collection(db, 'students'));
+                for (const docSnap of studentsSnapshot.docs) {
+                    await deleteDoc(doc(db, 'students', docSnap.id));
+                }
+
+                // Öğretmenleri sil
+                const teachersSnapshot = await getDocs(collection(db, 'teachers'));
+                for (const docSnap of teachersSnapshot.docs) {
+                    await deleteDoc(doc(db, 'teachers', docSnap.id));
+                }
+
+                status.className = 'status success';
+                status.textContent = '✅ Tüm veriler başarıyla silindi!';
+            } catch (error) {
+                console.error('Hata:', error);
+                status.className = 'status error';
+                status.textContent = `❌ Hata: ${error.message}`;
+            }
+        };
+    </script>
+</body>
+</html>
+

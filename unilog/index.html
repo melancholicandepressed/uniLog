@@ -8,6 +8,76 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase SDK - CDN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3MytAPaVE4ncq8nQmdE2BosCdCRaC1Q0",
+            authDomain: "unilog-aada4.firebaseapp.com",
+            projectId: "unilog-aada4",
+            storageBucket: "unilog-aada4.firebasestorage.app",
+            messagingSenderId: "98426342238",
+            appId: "1:98426342238:web:94bbcf5d0c20f755991dcf",
+            measurementId: "G-V5KQKFYKHF"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        // Make Firebase available globally
+        window.firebaseApp = app;
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.firebaseCollection = collection;
+        window.firebaseGetDocs = getDocs;
+        window.firebaseDoc = doc;
+        window.firebaseGetDoc = getDoc;
+        window.firebaseUpdateDoc = updateDoc;
+        window.firebaseAddDoc = addDoc;
+        
+        // Wait for DOM then load main script
+        function loadMainScript() {
+            const script = document.createElement('script');
+            script.src = 'script.js';
+            script.onload = () => {
+                // Ensure functions are available globally
+                if (typeof showLoginPage === 'function') {
+                    window.showLoginPage = showLoginPage;
+                }
+                if (typeof showHomePage === 'function') {
+                    window.showHomePage = showHomePage;
+                }
+                if (typeof handleLogin === 'function') {
+                    window.handleLogin = handleLogin;
+                }
+                if (typeof selectUserType === 'function') {
+                    window.selectUserType = selectUserType;
+                }
+                if (typeof logout === 'function') {
+                    window.logout = logout;
+                }
+                if (typeof saveGrades === 'function') {
+                    window.saveGrades = saveGrades;
+                }
+            };
+            document.body.appendChild(script);
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadMainScript);
+        } else {
+            loadMainScript();
+        }
+    </script>
+    
     <!-- Main CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -278,7 +348,7 @@
                     <div class="stat-icon">🎯</div>
                     <div class="stat-info">
                         <div class="stat-value" id="gpa">0.00</div>
-                        <div class="stat-label">Genel Ortalama</div>
+                        <div class="stat-label">GPA</div>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -501,17 +571,6 @@
         <div class="spinner"></div>
     </div>
 
-    <!-- Main JavaScript (Keeping original for compatibility, adding navbar module) -->
-    <script src="script.js"></script>
-    <script type="module">
-        import { initNavbar, initHamburgerMenu } from './js/components/navbar.js';
-        
-        // Initialize navbar scroll effect when DOM is ready
-        document.addEventListener('DOMContentLoaded', () => {
-            initNavbar();
-            initHamburgerMenu();
-        });
-    </script>
 </body>
 </html>
 
