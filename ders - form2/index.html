@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unilog - Not Yönetim Sistemi</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ana Sayfa -->
+    <section id="homePage" class="page active">
+        <!-- Navigation Bar -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <img src="assets/logo.svg" alt="Logo" class="logo-icon">
+
+                </div>
+                <div class="nav-menu" id="navMenu">
+                    <a href="#home" class="nav-link">Ana Sayfa</a>
+                    <a href="#creators" class="nav-link">Hazırlayanlar</a>
+                    <button class="btn-nav-login" onclick="showLoginPage()">Giriş Yap</button>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-landing parallax-section" id="home">
+            <div class="parallax-layer parallax-layer-1"></div>
+            <div class="parallax-layer parallax-layer-2"></div>
+            <div class="parallax-layer parallax-layer-3"></div>
+            
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            <span class="hero-title-main">Eğitimde Yeni Nesil</span>
+                            <span class="hero-title-highlight">Not Yönetimi</span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            Öğrenciler ve öğretmenler için tasarlanmış, modern ve kullanıcı dostu platform. 
+                            Notlarınızı kolayca takip edin, başarınızı artırın.
+                        </p>
+                        <div class="hero-buttons">
+                            <button class="btn-hero btn-hero-primary" onclick="showLoginPage('student')">
+                                <span class="btn-icon">👨‍🎓</span>
+                                Öğrenci Girişi
+                            </button>
+                            <button class="btn-hero btn-hero-secondary" onclick="showLoginPage('teacher')">
+                                <span class="btn-icon">👨‍🏫</span>
+                                Öğretmen Girişi
+                            </button>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="floating-card card-1">
+                            <div class="card-icon">📊</div>
+                            <div class="card-text">Anlık Notlar</div>
+                        </div>
+                        <div class="floating-card card-2">
+                            <div class="card-icon">🎯</div>
+                            <div class="card-text">Ortalama Takibi</div>
+                        </div>
+                        <div class="floating-card card-3">
+                            <div class="card-icon">✨</div>
+                            <div class="card-text">Kolay Kullanım</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hazırlayanlar Section -->
+        <section class="creators-section" id="creators">
+            <div class="creators-container">
+                <h2 class="creators-title">Hazırlayanlar</h2>
+                <p class="creators-subtitle">Bu projeyi hayata geçiren ekip</p>
+                
+                <div class="creators-grid">
+                    <!-- Creator Card 1 -->
+                    <div class="creator-card">
+                        <div class="creator-avatar">
+                            <img src="assets/kaan.png" alt="Kaan Karameşe" class="avatar-image">
+                        </div>
+                        <h3 class="creator-name">Kaan Karameşe</h3>
+                        <p class="creator-bio">
+                            Ostim Teknik Üniversitesi Yönetim Bilişim Sistemleri öğrencisi. 
+                            Modern web teknolojileri ve yazılım geliştirme üzerine çalışıyor.
+                        </p>
+                        <div class="creator-socials">
+                            <a href="https://github.com/kaankaramase" class="social-link" title="GitHub" target="_blank">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Creator Card 2 -->
+                    <div class="creator-card">
+                        <div class="creator-avatar">
+                            <img src="assets/ahmet.png" alt="Ahmet Polat" class="avatar-image">
+                        </div>
+                        <h3 class="creator-name">Ahmet Polat</h3>
+                        <p class="creator-bio">
+                            Ostim Teknik Üniversitesi Yönetim Bilişim Sistemleri öğrencisi. 
+                            Web tasarımı ve kullanıcı deneyimi konusunda gelişim gösteriyor.
+                        </p>
+                        <div class="creator-socials">
+                            <a href="https://github.com/ahmetpolat" class="social-link" title="GitHub" target="_blank">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <h4 class="footer-title">Hızlı Linkler</h4>
+                        <ul class="footer-links">
+                            <li><a href="#home">Ana Sayfa</a></li>
+                            <li><a href="#" onclick="showLoginPage('student')">Öğrenci Girişi</a></li>
+                            <li><a href="#" onclick="showLoginPage('teacher')">Öğretmen Girişi</a></li>
+                            <li><a href="#creators">Hakkımızda</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4 class="footer-title">İletişim</h4>
+                        <ul class="footer-contact">
+                            <li>
+                                <i class="fas fa-envelope"></i> 
+                                <a href="mailto:230103009@ostimteknik.edu.tr">230103009@ostimteknik.edu.tr</a>
+                            </li>
+                            <li>
+                                <i class="fas fa-map-marker-alt"></i> 
+                                <a href="https://www.google.com/maps/place//data=!4m2!3m1!1s0x14d349a85971269f:0xebe064ffd651704?sa=X&ved=1t:8290&ictx=111" 
+                                   target="_blank"
+                                   class="address-link">
+                                    Ostim, 100. Yıl Blv 55/F<br>
+                                    06374 Yenimahalle/Ankara
+                                </a>
+                            </li>
+                            <li><i class="fas fa-university"></i> Ostim Teknik Üniversitesi</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p class="footer-copyright">
+                       Unilog by Kaan Polat.
+                    </p>
+                    <div class="footer-socials">
+                        <a href="#" class="footer-social-link"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="footer-social-link"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <!-- Login Sayfası -->
+    <section id="loginPage" class="page">
+        <div class="container">
+            <button class="btn-back" onclick="showHomePage()">← Geri Dön</button>
+            
+            <div class="login-container">
+                <h2 class="page-title">Giriş Yap</h2>
+                
+                <!-- Kullanıcı Tipi Seçimi -->
+                <div class="user-type-selection">
+                    <button class="user-type-btn active" data-type="student" onclick="selectUserType('student')">
+                        <span class="icon">👨‍🎓</span>
+                        <span>Öğrenci Girişi</span>
+                    </button>
+                    <button class="user-type-btn" data-type="teacher" onclick="selectUserType('teacher')">
+                        <span class="icon">👨‍🏫</span>
+                        <span>Öğretmen Girişi</span>
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="username">Kullanıcı Adı</label>
+                        <input type="text" id="username" required placeholder="Kullanıcı adınızı girin">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Şifre</label>
+                        <input type="password" id="password" required placeholder="Şifrenizi girin">
+                    </div>
+
+                    <div id="errorMessage" class="error-message"></div>
+
+                    <button type="submit" class="btn-primary">Giriş Yap</button>
+                </form>
+
+                <!-- Demo Hesaplar -->
+                <div class="demo-accounts">
+                    <p class="demo-title">Demo Hesaplar:</p>
+                    <div class="demo-list">
+                        <div class="demo-section">
+                            <strong>👨‍🎓 Öğrenciler:</strong>
+                            <div class="demo-item">230103009 / 1234 (Kaan Karameşe)</div>
+                            <div class="demo-item">230103010 / 1234 (Ahmet Polat)</div>
+                            <div class="demo-item">230103011 / 1234 (Ayşe Yılmaz)</div>
+                        </div>
+                        <div class="demo-section">
+                            <strong>👨‍🏫 Öğretmenler:</strong>
+                            <div class="demo-item">ahmet.ogretmen / teacher123 (YBS 301)</div>
+                            <div class="demo-item">zeynep.ogretmen / teacher123 (YBS 391)</div>
+                            <div class="demo-item">mehmet.ogretmen / teacher123 (YBS 305)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Öğrenci Paneli -->
+    <section id="studentPanel" class="page">
+        <!-- Navigation Bar -->
+        <nav class="navbar" id="navbarStudent">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <img src="assets/logo.svg" alt="Logo" class="logo-icon">
+                </div>
+                <div class="nav-menu">
+                    <a href="#" onclick="showHomePage()" class="nav-link">Ana Sayfa</a>
+                    <button class="btn-nav-login" onclick="logout()">Çıkış Yap</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Parallax Background -->
+        <div class="parallax-background">
+            <div class="parallax-shape shape-1"></div>
+            <div class="parallax-shape shape-2"></div>
+            <div class="parallax-shape shape-3"></div>
+        </div>
+
+        <div class="container panel-container">
+            <!-- Hero Banner -->
+            <div class="panel-hero-banner">
+                <div class="panel-hero-content">
+                    <div class="user-welcome">
+                        <h1 class="panel-title">Hoş Geldin, <span id="studentName">-</span></h1>
+                        <p class="panel-subtitle">Öğrenci No: <span id="studentNumber">-</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">📚</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalCourses">0</div>
+                        <div class="stat-label">Toplam Ders</div>
+                    </div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="gpa">0.00</div>
+                        <div class="stat-label">Genel Ortalama</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-info">
+                        <div class="stat-value"><span id="totalAbsence">0</span> saat</div>
+                        <div class="stat-label">Toplam Devamsızlık</div>
+                        <div class="stat-sublabel">Güncel Dönem</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-info">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Aktif Dersler</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attendance-container">
+                <h3 class="section-title">Devamsızlık Durumu</h3>
+                <div class="attendance-grid" id="attendanceGrid">
+                    <!-- Dinamik içerik -->
+                </div>
+            </div>
+
+            <div class="grades-container">
+                <h3 class="section-title">Notlarım</h3>
+                <div class="table-wrapper">
+                    <table id="gradesTable">
+                        <thead>
+                            <tr>
+                                <th>Ders Kodu</th>
+                                <th>Ders Adı</th>
+                                <th>Vize</th>
+                                <th>Sınıf Ort. (V)</th>
+                                <th>Final</th>
+                                <th>Sınıf Ort. (F)</th>
+                                <th>Ortalama</th>
+                                <th>Harf Notu</th>
+                                <th>Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradesTableBody">
+                            <!-- Dinamik içerik -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <h4 class="footer-title">Hızlı Linkler</h4>
+                        <ul class="footer-links">
+                            <li><a href="#" onclick="showHomePage()">Ana Sayfa</a></li>
+                            <li><a href="#" onclick="logout()">Çıkış Yap</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4 class="footer-title">İletişim</h4>
+                        <ul class="footer-contact">
+                            <li>
+                                <i class="fas fa-envelope"></i> 
+                                <a href="mailto:230103009@ostimteknik.edu.tr">230103009@ostimteknik.edu.tr</a>
+                            </li>
+                            <li><i class="fas fa-university"></i> Ostim Teknik Üniversitesi</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p class="footer-copyright">
+                        © 2025 Not Yönetim Sistemi. Tüm hakları saklıdır.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <!-- Öğretmen Paneli -->
+    <section id="teacherPanel" class="page">
+        <!-- Navigation Bar -->
+        <nav class="navbar" id="navbarTeacher">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <img src="assets/logo.svg" alt="Logo" class="logo-icon">
+                </div>
+                <div class="nav-menu">
+                    <a href="#" onclick="showHomePage()" class="nav-link">Ana Sayfa</a>
+                    <button class="btn-nav-login" onclick="logout()">Çıkış Yap</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Parallax Background -->
+        <div class="parallax-background">
+            <div class="parallax-shape shape-1"></div>
+            <div class="parallax-shape shape-2"></div>
+            <div class="parallax-shape shape-3"></div>
+        </div>
+
+        <div class="container panel-container">
+            <!-- Hero Banner -->
+            <div class="panel-hero-banner">
+                <div class="panel-hero-content">
+                    <div class="user-welcome">
+                        <h1 class="panel-title">Hoş Geldin, <span id="teacherName">-</span></h1>
+                        <p class="panel-subtitle">Ders: <span id="teacherCourse">-</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İstatistikler -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalStudents">0</div>
+                        <div class="stat-label">Toplam Öğrenci</div>
+                    </div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="classAverage">0.00</div>
+                        <div class="stat-label">Sınıf Ortalaması</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="passedStudents">0</div>
+                        <div class="stat-label">Başarılı Öğrenci</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">❌</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="failedStudents">0</div>
+                        <div class="stat-label">Başarısız Öğrenci</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Not Tablosu -->
+            <div class="grades-container">
+                <h3 class="section-title">Öğrenci Not Tablosu</h3>
+                <div class="table-wrapper">
+                    <table id="teacherGradesTable">
+                        <thead>
+                            <tr>
+                                <th>Öğrenci No</th>
+                                <th>Ad Soyad</th>
+                                <th>Vize</th>
+                                <th>Final</th>
+                                <th>Ortalama</th>
+                                <th>Harf Notu</th>
+                                <th>Devamsızlık</th>
+                                <th>Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherGradesTableBody">
+                            <!-- Dinamik içerik -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Not Güncelleme Kartları -->
+            <div class="teacher-container">
+                <h3 class="section-title">Not Güncelleme</h3>
+                <div class="students-grid" id="studentsGrid">
+                    <!-- Dinamik içerik -->
+                </div>
+                <button class="btn-primary btn-save" onclick="saveGrades()">💾 Notları Kaydet</button>
+                <div id="successMessage" class="success-message"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-content">
+                    <div class="footer-column">
+                        <h4 class="footer-title">Hızlı Linkler</h4>
+                        <ul class="footer-links">
+                            <li><a href="#" onclick="showHomePage()">Ana Sayfa</a></li>
+                            <li><a href="#" onclick="logout()">Çıkış Yap</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h4 class="footer-title">İletişim</h4>
+                        <ul class="footer-contact">
+                            <li>
+                                <i class="fas fa-envelope"></i> 
+                                <a href="mailto:230103009@ostimteknik.edu.tr">230103009@ostimteknik.edu.tr</a>
+                            </li>
+                            <li><i class="fas fa-university"></i> Ostim Teknik Üniversitesi</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p class="footer-copyright">
+                        © 2025 Not Yönetim Sistemi. Tüm hakları saklıdır.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main JavaScript (Keeping original for compatibility, adding navbar module) -->
+    <script src="script.js"></script>
+    <script type="module">
+        import { initNavbar, initHamburgerMenu } from './js/components/navbar.js';
+        
+        // Initialize navbar scroll effect when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbar();
+            initHamburgerMenu();
+        });
+    </script>
+</body>
+</html>
+
