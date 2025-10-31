@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unilog - Not Yönetim Sistemi</title>
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK - CDN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
         import { getFirestore, collection, getDocs, doc, getDoc, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         
-        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA3MytAPaVE4ncq8nQmdE2BosCdCRaC1Q0",
             authDomain: "unilog-aada4.firebaseapp.com",
@@ -26,13 +23,11 @@
             measurementId: "G-V5KQKFYKHF"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        // Make Firebase available globally
         window.firebaseApp = app;
         window.firebaseDb = db;
         window.firebaseAuth = auth;
@@ -43,12 +38,10 @@
         window.firebaseUpdateDoc = updateDoc;
         window.firebaseAddDoc = addDoc;
         
-        // Wait for DOM then load main script
         function loadMainScript() {
             const script = document.createElement('script');
             script.src = 'script.js';
             script.onload = () => {
-                // Ensure functions are available globally
                 if (typeof showLoginPage === 'function') {
                     window.showLoginPage = showLoginPage;
                 }
@@ -76,20 +69,16 @@
         } else {
             loadMainScript();
         }
-    </script>
+    </script> <!-- Firebase SDK script -->
     
-    <!-- Main CSS -->
     <link rel="stylesheet" href="style.css">
-</head>
+</head> <!-- head -->
 <body>
-    <!-- Ana Sayfa -->
     <section id="homePage" class="page active">
-        <!-- Navigation Bar -->
         <nav class="navbar" id="navbar">
             <div class="nav-container">
                 <div class="nav-logo">
                     <img src="assets/logo.svg" alt="Logo" class="logo-icon">
-
                 </div>
                 <div class="nav-menu" id="navMenu">
                     <a href="#home" class="nav-link">Ana Sayfa</a>
@@ -102,9 +91,8 @@
                     <span></span>
                 </div>
             </div>
-        </nav>
+        </nav> <!-- navbar -->
 
-        <!-- Hero Section -->
         <section class="hero-landing parallax-section" id="home">
             <div class="parallax-layer parallax-layer-1"></div>
             <div class="parallax-layer parallax-layer-2"></div>
@@ -148,16 +136,14 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> <!-- hero section -->
 
-        <!-- Hazırlayanlar Section -->
         <section class="creators-section" id="creators">
             <div class="creators-container">
                 <h2 class="creators-title">Hazırlayanlar</h2>
                 <p class="creators-subtitle">Bu projeyi hayata geçiren ekip</p>
                 
                 <div class="creators-grid">
-                    <!-- Creator Card 1 -->
                     <div class="creator-card">
                         <div class="creator-avatar">
                             <img src="assets/kaan.png" alt="Kaan Karameşe" class="avatar-image">
@@ -171,10 +157,9 @@
                             <a href="https://github.com/k0vaaaks" class="social-link" title="GitHub" target="_blank">
                                 <i class="fab fa-github"></i>
                             </a>
-                        </div>
-                    </div>
+                        </div> <!-- creator-socials -->
+                    </div> <!-- creator-card -->
 
-                    <!-- Creator Card 2 -->
                     <div class="creator-card">
                         <div class="creator-avatar">
                             <img src="assets/ahmet.png" alt="Ahmet Polat" class="avatar-image">
@@ -188,13 +173,12 @@
                             <a href="https://github.com/melancholicandepressed" class="social-link" title="GitHub" target="_blank">
                                 <i class="fab fa-github"></i>
                             </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                        </div> <!-- creator-socials -->
+                    </div> <!-- creator-card -->
+                </div> <!-- creators-grid -->
+            </div> <!-- creators-container -->
+        </section> <!-- creators section -->
 
-        <!-- Footer -->
         <footer class="footer">
             <div class="footer-container">
                 <div class="footer-content">
@@ -206,7 +190,7 @@
                             <li><a href="#" onclick="showLoginPage('teacher')">Öğretmen Girişi</a></li>
                             <li><a href="#creators">Hakkımızda</a></li>
                         </ul>
-                    </div>
+                    </div> <!-- footer-column -->
                     
                     <div class="footer-column">
                         <h4 class="footer-title">İletişim</h4>
@@ -226,8 +210,8 @@
                             </li>
                             <li><i class="fas fa-university"></i> Ostim Teknik Üniversitesi</li>
                         </ul>
-                    </div>
-                </div>
+                    </div> <!-- footer-column -->
+                </div> <!-- footer-content -->
                 
                 <div class="footer-bottom">
                     <p class="footer-copyright">
@@ -238,13 +222,12 @@
                         <a href="https://x.com/ostimteknikuniv" class="footer-social-link" target="_blank" title="X"><i class="fab fa-x"></i></a>
                         <a href="https://instagram.com/ostimteknikuniv" class="footer-social-link" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="https://www.linkedin.com/school/ostim-teknik/" class="footer-social-link" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    </section>
+                    </div> <!-- footer-socials -->
+                </div> <!-- footer-bottom -->
+            </div> <!-- footer-container -->
+        </footer> <!-- footer -->
+    </section> <!-- homePage -->
 
-    <!-- Login Sayfası -->
     <section id="loginPage" class="page">
         <div class="container">
             <button class="btn-back" onclick="showHomePage()">← Geri Dön</button>
@@ -252,7 +235,6 @@
             <div class="login-container">
                 <h2 class="page-title">Giriş Yap</h2>
                 
-                <!-- Kullanıcı Tipi Seçimi -->
                 <div class="user-type-selection">
                     <button class="user-type-btn active" data-type="student" onclick="selectUserType('student')">
                         <span class="icon">👨‍🎓</span>
@@ -264,7 +246,6 @@
                     </button>
                 </div>
 
-                <!-- Login Form -->
                 <form id="loginForm" class="login-form" onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label for="username">Kullanıcı Adı</label>
@@ -281,12 +262,10 @@
                     <button type="submit" class="btn-primary">Giriş Yap</button>
                 </form>
             </div>
-        </div>
-    </section>
+        </div> <!-- container -->
+    </section> <!-- loginPage -->
 
-    <!-- Öğrenci Paneli -->
     <section id="studentPanel" class="page">
-        <!-- Navigation Bar -->
         <nav class="navbar" id="navbarStudent">
             <div class="nav-container">
                 <div class="nav-logo">
@@ -297,17 +276,15 @@
                     <button class="btn-nav-login" onclick="logout()">Çıkış Yap</button>
                 </div>
             </div>
-        </nav>
+        </nav> <!-- navbar student -->
 
-        <!-- Parallax Background -->
         <div class="parallax-background">
             <div class="parallax-shape shape-1"></div>
             <div class="parallax-shape shape-2"></div>
             <div class="parallax-shape shape-3"></div>
-        </div>
+        </div> <!-- parallax-background -->
 
         <div class="container panel-container">
-            <!-- Hero Banner -->
             <div class="panel-hero-banner">
                 <div class="panel-hero-content">
                     <div class="user-welcome">
@@ -315,7 +292,7 @@
                         <p class="panel-subtitle">Öğrenci No: <span id="studentNumber">-</span></p>
                     </div>
                 </div>
-            </div>
+            </div> <!-- panel-hero-banner -->
 
             <div class="stats-container">
                 <div class="stat-card">
@@ -347,14 +324,13 @@
                         <div class="stat-label">Aktif Dersler</div>
                     </div>
                 </div>
-            </div>
+            </div> <!-- stats-container -->
 
             <div class="attendance-container">
                 <h3 class="section-title">Devamsızlık Durumu</h3>
                 <div class="attendance-grid" id="attendanceGrid">
-                    <!-- Dinamik içerik -->
                 </div>
-            </div>
+            </div> <!-- attendance-container -->
 
             <div class="grades-container">
                 <h3 class="section-title">Notlarım</h3>
@@ -374,14 +350,12 @@
                             </tr>
                         </thead>
                         <tbody id="gradesTableBody">
-                            <!-- Dinamik içerik -->
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
+                </div> <!-- table-wrapper -->
+            </div> <!-- grades-container -->
+        </div> <!-- container panel-container -->
 
-        <!-- Footer -->
         <footer class="footer">
             <div class="footer-container">
                 <div class="footer-content">
@@ -411,12 +385,10 @@
                     </p>
                 </div>
             </div>
-        </footer>
-    </section>
+        </footer> <!-- footer -->
+    </section> <!-- studentPanel -->
 
-    <!-- Öğretmen Paneli -->
     <section id="teacherPanel" class="page">
-        <!-- Navigation Bar -->
         <nav class="navbar" id="navbarTeacher">
             <div class="nav-container">
                 <div class="nav-logo">
@@ -427,17 +399,15 @@
                     <button class="btn-nav-login" onclick="logout()">Çıkış Yap</button>
                 </div>
             </div>
-        </nav>
+        </nav> <!-- navbar teacher -->
 
-        <!-- Parallax Background -->
         <div class="parallax-background">
             <div class="parallax-shape shape-1"></div>
             <div class="parallax-shape shape-2"></div>
             <div class="parallax-shape shape-3"></div>
-        </div>
+        </div> <!-- parallax-background -->
 
         <div class="container panel-container">
-            <!-- Hero Banner -->
             <div class="panel-hero-banner">
                 <div class="panel-hero-content">
                     <div class="user-welcome">
@@ -445,9 +415,8 @@
                         <p class="panel-subtitle">Ders: <span id="teacherCourse">-</span></p>
                     </div>
                 </div>
-            </div>
+            </div> <!-- panel-hero-banner -->
 
-            <!-- İstatistikler -->
             <div class="stats-container">
                 <div class="stat-card">
                     <div class="stat-icon">👥</div>
@@ -477,9 +446,8 @@
                         <div class="stat-label">Başarısız Öğrenci</div>
                     </div>
                 </div>
-            </div>
+            </div> <!-- stats-container -->
 
-            <!-- Not Tablosu -->
             <div class="grades-container">
                 <h3 class="section-title">Öğrenci Not Tablosu</h3>
                 <div class="table-wrapper">
@@ -497,24 +465,20 @@
                             </tr>
                         </thead>
                         <tbody id="teacherGradesTableBody">
-                            <!-- Dinamik içerik -->
                         </tbody>
                     </table>
-                </div>
-            </div>
+                </div> <!-- table-wrapper -->
+            </div> <!-- grades-container -->
 
-            <!-- Not Güncelleme Kartları -->
             <div class="teacher-container">
                 <h3 class="section-title">Not Güncelleme</h3>
                 <div class="students-grid" id="studentsGrid">
-                    <!-- Dinamik içerik -->
                 </div>
                 <button class="btn-primary btn-save" onclick="saveGrades()">💾 Notları Kaydet</button>
                 <div id="successMessage" class="success-message"></div>
-            </div>
-        </div>
+            </div> <!-- teacher-container -->
+        </div> <!-- container panel-container -->
 
-        <!-- Footer -->
         <footer class="footer">
             <div class="footer-container">
                 <div class="footer-content">
@@ -544,14 +508,12 @@
                     </p>
                 </div>
             </div>
-        </footer>
-    </section>
+        </footer> <!-- footer -->
+    </section> <!-- teacherPanel -->
 
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
-    </div>
+    </div> <!-- loadingOverlay -->
 
-</body>
-</html>
-
+</body> <!-- body -->
+</html> <!-- html -->

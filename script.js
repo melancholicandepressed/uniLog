@@ -45,121 +45,14 @@ const coursesList = [
     { code: "YBS 309", name: "Kurumsal Kaynak Planlama", credit: 3, ects: 4, weeklyHours: 3 }
 ];
 
-// Devamsızlık hesaplama (Dönem: 14 hafta, %70 devam zorunluluğu = %30 devamsızlık hakkı)
 function calculateAbsenceLimit(ects) {
     const totalWeeks = 14;
-    const totalHours = ects * totalWeeks; // AKTS = toplam saat
-    const absenceRight = Math.floor(totalHours * 0.3); // %30 devamsızlık hakkı
+    const totalHours = ects * totalWeeks;
+    const absenceRight = Math.floor(totalHours * 0.3);
     return absenceRight;
 }
 
-// Demo Verileri
-const initialStudents = [
-    {
-        id: 1,
-        username: "230103009",
-        password: "1234",
-        name: "Kaan Karameşe",
-        number: "230103009",
-        courses: [
-            { code: "YBS 301", name: "Yöneylem Araştırması", midterm: 85, final: 88, classAvgMid: 72, classAvgFinal: 75, absence: 8, absenceLimit: 21, credit: 4, ects: 5 },
-            { code: "YBS 391", name: "Hukuka Giriş", midterm: 78, final: 82, classAvgMid: 70, classAvgFinal: 73, absence: 5, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 305", name: "Nesneye Dayalı Programlama", midterm: 92, final: 95, classAvgMid: 75, classAvgFinal: 78, absence: 3, absenceLimit: 21, credit: 3, ects: 5 },
-            { code: "YBS 303", name: "Yazılım Kalite Yönetimi", midterm: 88, final: 90, classAvgMid: 73, classAvgFinal: 76, absence: 12, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "IYU 325", name: "İş Yeri Uygulaması", midterm: 95, final: 98, classAvgMid: 80, classAvgFinal: 83, absence: 15, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 457", name: "Web Tabanlı Uygulama Programlama", midterm: 90, final: 93, classAvgMid: 76, classAvgFinal: 79, absence: 13, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 309", name: "Kurumsal Kaynak Planlama", midterm: 82, final: 85, classAvgMid: 71, classAvgFinal: 74, absence: 7, absenceLimit: 16, credit: 3, ects: 4 }
-        ]
-    },
-    {
-        id: 2,
-        username: "230103010",
-        password: "1234",
-        name: "Ahmet Polat",
-        number: "230103010",
-        courses: [
-            { code: "YBS 301", name: "Yöneylem Araştırması", midterm: 75, final: 78, classAvgMid: 72, classAvgFinal: 75, absence: 18, absenceLimit: 21, credit: 4, ects: 5 },
-            { code: "YBS 391", name: "Hukuka Giriş", midterm: 82, final: 85, classAvgMid: 70, classAvgFinal: 73, absence: 10, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 305", name: "Nesneye Dayalı Programlama", midterm: 70, final: 73, classAvgMid: 75, classAvgFinal: 78, absence: 19, absenceLimit: 21, credit: 3, ects: 5 },
-            { code: "YBS 303", name: "Yazılım Kalite Yönetimi", midterm: 78, final: 80, classAvgMid: 73, classAvgFinal: 76, absence: 15, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "IYU 325", name: "İş Yeri Uygulaması", midterm: 88, final: 90, classAvgMid: 80, classAvgFinal: 83, absence: 8, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 457", name: "Web Tabanlı Uygulama Programlama", midterm: 85, final: 88, classAvgMid: 76, classAvgFinal: 79, absence: 13, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 309", name: "Kurumsal Kaynak Planlama", midterm: 73, final: 76, classAvgMid: 71, classAvgFinal: 74, absence: 14, absenceLimit: 16, credit: 3, ects: 4 }
-        ]
-    },
-    {
-        id: 3,
-        username: "230103011",
-        password: "1234",
-        name: "Ayşe Yılmaz",
-        number: "230103011",
-        courses: [
-            { code: "YBS 301", name: "Yöneylem Araştırması", midterm: 68, final: 72, classAvgMid: 72, classAvgFinal: 75, absence: 20, absenceLimit: 21, credit: 4, ects: 5 },
-            { code: "YBS 391", name: "Hukuka Giriş", midterm: 65, final: 70, classAvgMid: 70, classAvgFinal: 73, absence: 15, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 305", name: "Nesneye Dayalı Programlama", midterm: 80, final: 83, classAvgMid: 75, classAvgFinal: 78, absence: 16, absenceLimit: 21, credit: 3, ects: 5 },
-            { code: "YBS 303", name: "Yazılım Kalite Yönetimi", midterm: 70, final: 74, classAvgMid: 73, classAvgFinal: 76, absence: 14, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "IYU 325", name: "İş Yeri Uygulaması", midterm: 75, final: 78, classAvgMid: 80, classAvgFinal: 83, absence: 12, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 457", name: "Web Tabanlı Uygulama Programlama", midterm: 72, final: 75, classAvgMid: 76, classAvgFinal: 79, absence: 15, absenceLimit: 16, credit: 3, ects: 4 },
-            { code: "YBS 309", name: "Kurumsal Kaynak Planlama", midterm: 77, final: 80, classAvgMid: 71, classAvgFinal: 74, absence: 11, absenceLimit: 16, credit: 3, ects: 4 }
-        ]
-    }
-];
-
-const initialTeachers = [
-    {
-        id: 1,
-        username: "ahmet.ogretmen",
-        password: "teacher123",
-        name: "Ahmet Öztürk",
-        course: "YBS 301"
-    },
-    {
-        id: 2,
-        username: "zeynep.ogretmen",
-        password: "teacher123",
-        name: "Zeynep Arslan",
-        course: "YBS 391"
-    },
-    {
-        id: 3,
-        username: "mehmet.ogretmen",
-        password: "teacher123",
-        name: "Mehmet Yılmaz",
-        course: "YBS 305"
-    },
-    {
-        id: 4,
-        username: "ayse.ogretmen",
-        password: "teacher123",
-        name: "Ayşe Demir",
-        course: "YBS 303"
-    },
-    {
-        id: 5,
-        username: "can.ogretmen",
-        password: "teacher123",
-        name: "Can Kaya",
-        course: "IYU 325"
-    },
-    {
-        id: 6,
-        username: "elif.ogretmen",
-        password: "teacher123",
-        name: "Elif Şahin",
-        course: "YBS 457"
-    },
-    {
-        id: 7,
-        username: "ali.ogretmen",
-        password: "teacher123",
-        name: "Ali Çelik",
-        course: "YBS 309"
-    }
-];
-
-// Firebase Firestore İşlemleri
 async function initializeData() {
-    // Ensure Firebase is ready
     if (!db || !collection) {
         console.warn('Firebase henüz hazır değil, bekleniyor...');
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -170,29 +63,7 @@ async function initializeData() {
     }
     
     try {
-        // Öğrenciler koleksiyonunu kontrol et
-        const studentsSnapshot = await getDocs(collection(db, 'students'));
-        
-        // Eğer koleksiyon boşsa, demo verileri ekle
-        if (studentsSnapshot.empty) {
-            console.log('Firebase\'e demo öğrenci verileri ekleniyor...');
-            for (const student of initialStudents) {
-                await addDoc(collection(db, 'students'), student);
-            }
-        }
-        
-        // Öğretmenler koleksiyonunu kontrol et
-        const teachersSnapshot = await getDocs(collection(db, 'teachers'));
-        
-        // Eğer koleksiyon boşsa, demo verileri ekle
-        if (teachersSnapshot.empty) {
-            console.log('Firebase\'e demo öğretmen verileri ekleniyor...');
-            for (const teacher of initialTeachers) {
-                await addDoc(collection(db, 'teachers'), teacher);
-            }
-        }
-        
-        console.log('Firebase verileri hazır!');
+        console.log('Firebase bağlantısı hazır!');
     } catch (error) {
         console.error('Firebase başlatma hatası:', error);
     }
