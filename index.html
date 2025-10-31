@@ -134,6 +134,14 @@
                             <div class="card-icon">✨</div>
                             <div class="card-text">Kolay Kullanım</div>
                         </div>
+                        <div class="floating-card card-4">
+                            <div class="card-icon">📈</div>
+                            <div class="card-text">İlerleme Takibi</div>
+                        </div>
+                        <div class="floating-card card-5">
+                            <div class="card-icon">🎓</div>
+                            <div class="card-text">Akademik Başarı</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -450,18 +458,37 @@
             </div> <!-- stats-container -->
 
             <div class="grades-container">
-                <h3 class="section-title">Öğrenci Not Tablosu</h3>
+                <div class="table-header-controls">
+                    <h3 class="section-title">Öğrenci Not Tablosu</h3>
+                    <div class="table-controls">
+                        <input type="text" id="studentSearchInput" class="search-input" placeholder="🔍 Öğrenci ara..." oninput="filterStudents()">
+                    </div>
+                </div>
                 <div class="table-wrapper">
                     <table id="teacherGradesTable">
                         <thead>
                             <tr>
-                                <th>Öğrenci No</th>
-                                <th>Ad Soyad</th>
-                                <th>Vize</th>
-                                <th>Final</th>
-                                <th>Ortalama</th>
-                                <th>Harf Notu</th>
-                                <th>Devamsızlık</th>
+                                <th class="sortable" data-sort="number" onclick="sortTable('number')">
+                                    Öğrenci No <span class="sort-icon"></span>
+                                </th>
+                                <th class="sortable" data-sort="name" onclick="sortTable('name')">
+                                    Ad Soyad <span class="sort-icon"></span>
+                                </th>
+                                <th class="sortable" data-sort="midterm" onclick="sortTable('midterm')">
+                                    Vize <span class="sort-icon"></span>
+                                </th>
+                                <th class="sortable" data-sort="final" onclick="sortTable('final')">
+                                    Final <span class="sort-icon"></span>
+                                </th>
+                                <th class="sortable" data-sort="average" onclick="sortTable('average')">
+                                    Ortalama <span class="sort-icon"></span>
+                                </th>
+                                <th class="sortable" data-sort="letter" onclick="sortTable('letter')">
+                                    Harf Notu <span class="sort-icon"></span>
+                                </th>
+                                <th class="sortable" data-sort="absence" onclick="sortTable('absence')">
+                                    Devamsızlık <span class="sort-icon"></span>
+                                </th>
                                 <th>Durum</th>
                             </tr>
                         </thead>

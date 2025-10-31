@@ -389,45 +389,115 @@ body {
 
 .floating-card {
     position: absolute;
-    background: white;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     padding: 1.5rem 2rem;
     border-radius: 25px;
-    box-shadow: 15px 15px 40px rgba(26, 45, 90, 0.15),
-                -10px -10px 30px rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 
+        0 20px 60px rgba(26, 45, 90, 0.15),
+        0 8px 25px rgba(26, 45, 90, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.5);
     display: flex;
     align-items: center;
     gap: 1rem;
-    animation: floating 3s ease-in-out infinite;
-    transition: transform 0.3s ease-out;
-    will-change: transform;
+    animation: floating 4s ease-in-out infinite;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, box-shadow;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.floating-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(26, 45, 90, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+.floating-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 
+        0 30px 80px rgba(26, 45, 90, 0.25),
+        0 12px 35px rgba(26, 45, 90, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.6),
+        0 0 40px rgba(26, 45, 90, 0.1);
+    border-color: rgba(255, 255, 255, 0.8);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.95));
+}
+
+.floating-card:hover::before {
+    opacity: 1;
 }
 
 .card-1 {
-    top: 10%;
-    left: 10%;
+    top: 5%;
+    left: 2%;
+    animation: floating-wave 4.5s ease-in-out infinite;
     animation-delay: 0s;
 }
 
 .card-2 {
-    top: 45%;
-    right: 10%;
-    animation-delay: 1s;
+    top: 70%;
+    right: 2%;
+    animation: floating-drift 4s ease-in-out infinite;
+    animation-delay: 0.8s;
 }
 
 .card-3 {
-    bottom: 15%;
-    left: 20%;
-    animation-delay: 2s;
+    bottom: 5%;
+    left: 2%;
+    animation: floating-drift 5s ease-in-out infinite;
+    animation-delay: 1.6s;
+}
+
+.card-4 {
+    top: 40%;
+    left: 52%;
+    animation: floating-drift 4.2s ease-in-out infinite;
+    animation-delay: 0.4s;
+}
+
+.card-5 {
+    bottom: 5%;
+    right: 2%;
+    animation: floating-drift 4.8s ease-in-out infinite;
+    animation-delay: 1.2s;
 }
 
 .card-icon {
     font-size: 2.5rem;
+    filter: drop-shadow(0 4px 8px rgba(26, 45, 90, 0.2));
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.floating-card:hover .card-icon {
+    transform: scale(1.15) rotate(5deg);
+    filter: drop-shadow(0 6px 12px rgba(26, 45, 90, 0.3));
 }
 
 .card-text {
     font-weight: 600;
     color: var(--text-primary);
     white-space: nowrap;
+    position: relative;
+    z-index: 1;
+    transition: color 0.4s ease;
+}
+
+.floating-card:hover .card-text {
+    color: var(--primary);
 }
 
 /* Buttons */
@@ -1159,6 +1229,70 @@ tbody td .course-code {
     margin-bottom: var(--spacing-lg);
 }
 
+.table-header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.table-controls {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.search-input {
+    padding: 0.75rem 1.25rem;
+    border: 2px solid rgba(26, 45, 90, 0.15);
+    border-radius: 20px;
+    background: linear-gradient(145deg, #fafbfc, #ffffff);
+    box-shadow: 
+        inset 6px 6px 12px rgba(26, 45, 90, 0.06),
+        inset -6px -6px 12px rgba(255, 255, 255, 1),
+        0 2px 8px rgba(26, 45, 90, 0.05);
+    font-size: 1rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    min-width: 250px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #ffffff;
+    box-shadow: 
+        inset 8px 8px 16px rgba(26, 45, 90, 0.08),
+        inset -8px -8px 16px rgba(255, 255, 255, 1),
+        0 0 0 4px rgba(26, 45, 90, 0.1),
+        0 0 20px rgba(26, 45, 90, 0.15);
+    transform: translateY(-2px);
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.2s ease;
+}
+
+.sortable:hover {
+    background-color: rgba(26, 45, 90, 0.05);
+}
+
+.sort-icon {
+    font-size: 0.8rem;
+    margin-left: 0.25rem;
+    color: var(--primary);
+    opacity: 0.7;
+}
+
 .table-wrapper {
     overflow-x: auto;
     border-radius: 20px;
@@ -1864,12 +1998,66 @@ tbody td:nth-child(2) {
     }
 }
 
+/* Alternatif 1: Gentle Pulse - Yumuşak büyüyüp küçülme */
 @keyframes floating {
     0%, 100% {
+        transform: scale(1) translateY(0);
+    }
+    50% {
+        transform: scale(1.05) translateY(-15px);
+    }
+}
+
+/* Alternatif 2: Wave Motion - Dalga hareketi */
+@keyframes floating-wave {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    25% {
+        transform: translate(5px, -10px);
+    }
+    50% {
+        transform: translate(-5px, -20px);
+    }
+    75% {
+        transform: translate(3px, -8px);
+    }
+}
+
+/* Alternatif 3: Drift - Rüzgarda süzülme */
+@keyframes floating-drift {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+        transform: translate(8px, -12px) rotate(2deg);
+    }
+    66% {
+        transform: translate(-6px, -18px) rotate(-1.5deg);
+    }
+}
+
+/* Alternatif 4: Smooth Float - Sade yumuşak yükselme */
+@keyframes floating-smooth {
+    0%, 100% {
         transform: translateY(0);
+        opacity: 1;
     }
     50% {
         transform: translateY(-20px);
+        opacity: 0.95;
+    }
+}
+
+/* Alternatif 5: Scale Pulse - Büyüyüp küçülme + glow */
+@keyframes floating-pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 20px 60px rgba(26, 45, 90, 0.15);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 25px 70px rgba(26, 45, 90, 0.25);
     }
 }
 
@@ -2000,10 +2188,145 @@ tbody td:nth-child(2) {
         font-size: 2.2rem;
     }
 
+    .creator-card {
+        justify-content: center;
+        align-items: center;
+        padding: 3.75rem;
+        gap: 2.25rem;
+    }
+
+    .creator-avatar {
+        width: 225px;
+        height: 225px;
+        margin-bottom: 2.25rem;
+    }
+
+    .avatar-image {
+        border-width: 6px;
+    }
+
+    .avatar-placeholder {
+        width: 225px;
+        height: 225px;
+        font-size: 4.5rem;
+    }
+
+    .creator-name {
+        font-size: 2.25rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .creator-bio {
+        font-size: 1.425rem;
+        line-height: 1.8;
+        margin-bottom: 2.25rem;
+    }
+
+    .creator-socials {
+        gap: 1.5rem;
+    }
+
+    .social-link {
+        width: 67.5px;
+        height: 67.5px;
+        font-size: 1.8rem;
+    }
+
     .footer-content {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
+}
+
+@media (max-width: 668px) {
+    .creator-card {
+        padding: 3.5rem;
+        gap: 2.1rem;
+    }
+
+    .creator-avatar {
+        width: 210px;
+        height: 210px;
+        margin-bottom: 2.1rem;
+    }
+
+    .avatar-image {
+        border-width: 5.6px;
+    }
+
+    .avatar-placeholder {
+        width: 210px;
+        height: 210px;
+        font-size: 4.2rem;
+    }
+
+    .creator-name {
+        font-size: 2.1rem;
+        margin-bottom: 0.7rem;
+    }
+
+    .creator-bio {
+        font-size: 1.33rem;
+        line-height: 1.8;
+        margin-bottom: 2.1rem;
+    }
+
+    .creator-socials {
+        gap: 1.4rem;
+    }
+
+    .social-link {
+        width: 63px;
+        height: 63px;
+        font-size: 1.68rem;
+    }
+}
+
+@media (max-width: 568px) {
+    .creator-card {
+        padding: 3rem;
+        gap: 1.8rem;
+    }
+
+    .creator-avatar {
+        width: 180px;
+        height: 180px;
+        margin-bottom: 1.8rem;
+    }
+
+    .avatar-image {
+        border-width: 4.8px;
+    }
+
+    .avatar-placeholder {
+        width: 180px;
+        height: 180px;
+        font-size: 3.6rem;
+    }
+
+    .creator-name {
+        font-size: 1.8rem;
+        margin-bottom: 0.6rem;
+    }
+
+    .creator-bio {
+        font-size: 1.14rem;
+        line-height: 1.8;
+        margin-bottom: 1.8rem;
+    }
+
+    .creator-socials {
+        gap: 1.2rem;
+    }
+
+    .social-link {
+        width: 54px;
+        height: 54px;
+        font-size: 1.44rem;
+    }
+}
+
+@media (max-width: 480px) {
 
     .footer-bottom {
         flex-direction: column;
@@ -2027,6 +2350,48 @@ tbody td:nth-child(2) {
         grid-template-columns: 1fr;
     }
 
+    .stat-card {
+        padding: 2rem;
+    }
+
+    .stat-icon {
+        font-size: 4rem;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+    }
+
+    .attendance-card {
+        padding: 2rem;
+    }
+
+    .course-code {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .course-name {
+        font-size: 1.2rem;
+        margin-top: 1rem;
+    }
+
+    .student-card {
+        padding: 2rem;
+    }
+
+    .student-name {
+        font-size: 1.4rem;
+    }
+
+    .student-number {
+        font-size: 1rem;
+    }
+
     table {
         font-size: 0.85rem;
     }
@@ -2044,7 +2409,7 @@ tbody td:nth-child(2) {
 
 @media (max-width: 480px) {
     .nav-container {
-        padding: 1rem;
+        padding: 0.75rem 1rem;
     }
 
     .nav-logo {
@@ -2052,9 +2417,9 @@ tbody td:nth-child(2) {
     }
 
     .logo-icon {
-        height: 40px;
+        height: 50px;
         width: auto;
-        max-width: 180px;
+        max-width: 220px;
     }
 
     .hero-title-main {
@@ -2112,8 +2477,137 @@ tbody td:nth-child(2) {
         font-size: 2rem;
     }
 
-    .stat-value {
+    .panel-container {
+        padding: 80px 1rem 2rem;
+    }
+
+    .panel-hero-banner {
+        padding: 1.5rem 0;
+    }
+
+    .user-welcome {
+        padding: 1.5rem 1rem;
+    }
+
+    .panel-title {
         font-size: 1.5rem;
+    }
+
+    .panel-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .stats-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        padding: 1.5rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        font-size: 3rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+    }
+
+    .attendance-container {
+        padding: 1.5rem;
+    }
+
+    .attendance-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .attendance-card {
+        padding: 1.5rem;
+    }
+
+    .grades-container {
+        padding: 1.5rem;
+        overflow-x: auto;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        font-size: 0.75rem;
+        min-width: 800px;
+    }
+
+    thead th,
+    tbody td {
+        padding: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .teacher-container {
+        padding: 1.5rem;
+    }
+
+    .students-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .student-card {
+        padding: 1.5rem;
+    }
+
+    .student-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .grades-input {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .section-title {
+        font-size: 1.2rem;
+    }
+
+    .hamburger span {
+        width: 22px;
+        height: 2px;
+    }
+
+    .nav-menu {
+        width: 200px;
+        padding: 1.5rem;
+    }
+
+    .table-header-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .table-controls {
+        width: 100%;
+    }
+
+    .search-input {
+        width: 100%;
+        min-width: auto;
     }
 }
 

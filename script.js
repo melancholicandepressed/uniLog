@@ -33,6 +33,10 @@ if (!initFirebase()) {
 // Veri Yapısı - Firebase için
 let currentUser = null;
 let currentUserType = null;
+let teacherTableStudents = [];
+let teacherTableStudentsOriginal = [];
+let currentSortColumn = null;
+let sortDirection = 'asc';
 
 // Ders Listesi
 const coursesList = [
@@ -473,6 +477,20 @@ async function loadTeacherPanel() {
         student.courses.some(course => course.code === currentUser.course)
     );
     
+    teacherTableStudents = courseStudents.map(student => {
+        const courseData = student.courses.find(c => c.code === currentUser.course);
+        const average = calculateAverage(courseData.midterm, courseData.final);
+        const letterGrade = getLetterGrade(average);
+        return {
+            ...student,
+            courseData,
+            average,
+            letterGrade
+        };
+    });
+    
+    teacherTableStudentsOriginal = [...teacherTableStudents];
+    
     // İstatistikleri Hesapla
     let totalAverage = 0;
     let passedCount = 0;
@@ -494,28 +512,14 @@ async function loadTeacherPanel() {
     document.getElementById('passedStudents').textContent = passedCount;
     document.getElementById('failedStudents').textContent = failedCount;
     
-    // Not Tablosunu Doldur
-    const tbody = document.getElementById('teacherGradesTableBody');
-    tbody.innerHTML = '';
+    const searchInput = document.getElementById('studentSearchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    currentSortColumn = null;
+    sortDirection = 'asc';
     
-    courseStudents.forEach(student => {
-        const courseData = student.courses.find(c => c.code === currentUser.course);
-        const average = calculateAverage(courseData.midterm, courseData.final);
-        const letterGrade = getLetterGrade(average);
-        
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td><strong>${student.number}</strong></td>
-            <td><strong>${student.name}</strong></td>
-            <td><strong>${courseData.midterm || '-'}</strong></td>
-            <td><strong>${courseData.final || '-'}</strong></td>
-            <td><strong style="font-size: 1.1rem; color: var(--primary);">${average.toFixed(2)}</strong></td>
-            <td><span class="letter-grade ${letterGrade.letter}">${letterGrade.letter}</span></td>
-            <td>${courseData.absence || 0} / ${courseData.absenceLimit} saat</td>
-            <td>${getStatusBadge(average)}</td>
-        `;
-        tbody.appendChild(row);
-    });
+    renderTeacherTable();
     
     // Not Güncelleme Kartlarını Doldur
     const studentsGrid = document.getElementById('studentsGrid');
@@ -569,6 +573,121 @@ async function loadTeacherPanel() {
         `;
         studentsGrid.appendChild(studentCard);
     });
+}
+
+function renderTeacherTable() {
+    const tbody = document.getElementById('teacherGradesTableBody');
+    tbody.innerHTML = '';
+    
+    teacherTableStudents.forEach(student => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${student.number}</strong></td>
+            <td><strong>${student.name}</strong></td>
+            <td><strong>${student.courseData.midterm || '-'}</strong></td>
+            <td><strong>${student.courseData.final || '-'}</strong></td>
+            <td><strong style="font-size: 1.1rem; color: var(--primary);">${student.average.toFixed(2)}</strong></td>
+            <td><span class="letter-grade ${student.letterGrade.letter}">${student.letterGrade.letter}</span></td>
+            <td>${student.courseData.absence || 0} / ${student.courseData.absenceLimit} saat</td>
+            <td>${getStatusBadge(student.average)}</td>
+        `;
+        tbody.appendChild(row);
+    });
+    
+    updateSortIcons();
+}
+
+function sortTable(column) {
+    if (currentSortColumn === column) {
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSortColumn = column;
+        sortDirection = 'asc';
+    }
+    
+    teacherTableStudents.sort((a, b) => {
+        let aVal, bVal;
+        
+        switch(column) {
+            case 'number':
+                aVal = parseInt(a.number) || 0;
+                bVal = parseInt(b.number) || 0;
+                break;
+            case 'name':
+                aVal = a.name.toLowerCase();
+                bVal = b.name.toLowerCase();
+                break;
+            case 'midterm':
+                aVal = a.courseData.midterm || 0;
+                bVal = b.courseData.midterm || 0;
+                break;
+            case 'final':
+                aVal = a.courseData.final || 0;
+                bVal = b.courseData.final || 0;
+                break;
+            case 'average':
+                aVal = a.average || 0;
+                bVal = b.average || 0;
+                break;
+            case 'letter':
+                const letterOrder = ['AA', 'BA', 'BB', 'CB', 'CC', 'DC', 'DD', 'FD', 'FF', 'NA'];
+                aVal = letterOrder.indexOf(a.letterGrade.letter);
+                bVal = letterOrder.indexOf(b.letterGrade.letter);
+                break;
+            case 'absence':
+                aVal = a.courseData.absence || 0;
+                bVal = b.courseData.absence || 0;
+                break;
+            default:
+                return 0;
+        }
+        
+        if (typeof aVal === 'string') {
+            return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        } else {
+            return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+        }
+    });
+    
+    renderTeacherTable();
+}
+
+function updateSortIcons() {
+    document.querySelectorAll('.sort-icon').forEach(icon => {
+        icon.textContent = '';
+    });
+    
+    if (currentSortColumn) {
+        const header = document.querySelector(`th[data-sort="${currentSortColumn}"] .sort-icon`);
+        if (header) {
+            header.textContent = sortDirection === 'asc' ? ' ▲' : ' ▼';
+        }
+    }
+}
+
+function filterStudents() {
+    const searchTerm = document.getElementById('studentSearchInput').value.toLowerCase().trim();
+    
+    if (!searchTerm) {
+        teacherTableStudents = [...teacherTableStudentsOriginal];
+    } else {
+        teacherTableStudents = teacherTableStudentsOriginal.filter(student => 
+            student.name.toLowerCase().includes(searchTerm) ||
+            student.number.includes(searchTerm)
+        );
+    }
+    
+    if (currentSortColumn) {
+        const column = currentSortColumn;
+        const direction = sortDirection;
+        currentSortColumn = null;
+        sortTable(column);
+        currentSortColumn = column;
+        sortDirection = direction === 'asc' ? 'desc' : 'asc';
+        sortTable(column);
+    } else {
+        renderTeacherTable();
+    }
 }
 
 // Notları Kaydetme - Firebase'e dinamik POST/UPDATE
@@ -909,6 +1028,8 @@ function exposeFunctions() {
     window.selectUserType = selectUserType;
     window.logout = logout;
     window.saveGrades = saveGrades;
+    window.sortTable = sortTable;
+    window.filterStudents = filterStudents;
 }
 
 // Expose functions immediately and on DOM ready
