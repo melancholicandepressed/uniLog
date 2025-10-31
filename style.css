@@ -389,115 +389,63 @@ body {
 
 .floating-card {
     position: absolute;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: white;
     padding: 1.5rem 2rem;
     border-radius: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 
-        0 20px 60px rgba(26, 45, 90, 0.15),
-        0 8px 25px rgba(26, 45, 90, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+    box-shadow: 15px 15px 40px rgba(26, 45, 90, 0.15),
+                -10px -10px 30px rgba(255, 255, 255, 0.9);
     display: flex;
     align-items: center;
     gap: 1rem;
-    animation: floating 4s ease-in-out infinite;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform, box-shadow;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.floating-card::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(26, 45, 90, 0.1) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-}
-
-.floating-card:hover {
-    transform: translateY(-8px) scale(1.05);
-    box-shadow: 
-        0 30px 80px rgba(26, 45, 90, 0.25),
-        0 12px 35px rgba(26, 45, 90, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 1),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.6),
-        0 0 40px rgba(26, 45, 90, 0.1);
-    border-color: rgba(255, 255, 255, 0.8);
-    background: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.95));
-}
-
-.floating-card:hover::before {
-    opacity: 1;
+    animation: floating 3s ease-in-out infinite;
+    transition: transform 0.3s ease-out;
+    will-change: transform;
 }
 
 .card-1 {
-    top: 5%;
-    left: 2%;
-    animation: floating-wave 4.5s ease-in-out infinite;
+    top: 10%;
+    left: 10%;
     animation-delay: 0s;
 }
 
 .card-2 {
-    top: 70%;
-    right: 2%;
-    animation: floating-drift 4s ease-in-out infinite;
-    animation-delay: 0.8s;
+    top: 45%;
+    right: 10%;
+    animation-delay: 1s;
 }
 
 .card-3 {
-    bottom: 5%;
-    left: 2%;
-    animation: floating-drift 5s ease-in-out infinite;
-    animation-delay: 1.6s;
+    bottom: 15%;
+    left: 20%;
+    animation-delay: 2s;
 }
 
 .card-4 {
-    top: 40%;
-    left: 52%;
-    animation: floating-drift 4.2s ease-in-out infinite;
-    animation-delay: 0.4s;
+    top: 25%;
+    right: 25%;
+    animation-delay: 0.5s;
 }
 
 .card-5 {
-    bottom: 5%;
-    right: 2%;
-    animation: floating-drift 4.8s ease-in-out infinite;
-    animation-delay: 1.2s;
+    bottom: 35%;
+    right: 15%;
+    animation-delay: 1.5s;
+}
+
+.card-6 {
+    top: 60%;
+    left: 35%;
+    animation-delay: 2.5s;
 }
 
 .card-icon {
     font-size: 2.5rem;
-    filter: drop-shadow(0 4px 8px rgba(26, 45, 90, 0.2));
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
-    position: relative;
-    z-index: 1;
-}
-
-.floating-card:hover .card-icon {
-    transform: scale(1.15) rotate(5deg);
-    filter: drop-shadow(0 6px 12px rgba(26, 45, 90, 0.3));
 }
 
 .card-text {
     font-weight: 600;
     color: var(--text-primary);
     white-space: nowrap;
-    position: relative;
-    z-index: 1;
-    transition: color 0.4s ease;
-}
-
-.floating-card:hover .card-text {
-    color: var(--primary);
 }
 
 /* Buttons */
@@ -1998,66 +1946,12 @@ tbody td:nth-child(2) {
     }
 }
 
-/* Alternatif 1: Gentle Pulse - Yumuşak büyüyüp küçülme */
 @keyframes floating {
     0%, 100% {
-        transform: scale(1) translateY(0);
-    }
-    50% {
-        transform: scale(1.05) translateY(-15px);
-    }
-}
-
-/* Alternatif 2: Wave Motion - Dalga hareketi */
-@keyframes floating-wave {
-    0%, 100% {
-        transform: translate(0, 0);
-    }
-    25% {
-        transform: translate(5px, -10px);
-    }
-    50% {
-        transform: translate(-5px, -20px);
-    }
-    75% {
-        transform: translate(3px, -8px);
-    }
-}
-
-/* Alternatif 3: Drift - Rüzgarda süzülme */
-@keyframes floating-drift {
-    0%, 100% {
-        transform: translate(0, 0) rotate(0deg);
-    }
-    33% {
-        transform: translate(8px, -12px) rotate(2deg);
-    }
-    66% {
-        transform: translate(-6px, -18px) rotate(-1.5deg);
-    }
-}
-
-/* Alternatif 4: Smooth Float - Sade yumuşak yükselme */
-@keyframes floating-smooth {
-    0%, 100% {
         transform: translateY(0);
-        opacity: 1;
     }
     50% {
         transform: translateY(-20px);
-        opacity: 0.95;
-    }
-}
-
-/* Alternatif 5: Scale Pulse - Büyüyüp küçülme + glow */
-@keyframes floating-pulse {
-    0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 20px 60px rgba(26, 45, 90, 0.15);
-    }
-    50% {
-        transform: scale(1.08);
-        box-shadow: 0 25px 70px rgba(26, 45, 90, 0.25);
     }
 }
 
