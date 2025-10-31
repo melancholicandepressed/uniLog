@@ -1,0 +1,1 @@
+Çilekeşsiz rock mu olurmuş
